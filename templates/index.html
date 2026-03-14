@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CISO Backup Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0f1117;
+            --bg-card: #1a1d27;
+            --bg-input: #252836;
+            --border: #2e3244;
+            --border-focus: #6366f1;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --success: #22c55e;
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-border: rgba(239, 68, 68, 0.3);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .brand-icon svg { width: 24px; height: 24px; fill: white; }
+
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.375rem;
+        }
+
+        .brand p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .flash-messages {
+            margin-bottom: 1.25rem;
+        }
+
+        .flash {
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .flash.error {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: #fca5a5;
+        }
+
+        .flash.success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: #86efac;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .upload-group label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .file-drop {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg-input);
+        }
+
+        .file-drop:hover, .file-drop.dragover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.04);
+        }
+
+        .file-drop.has-file {
+            border-color: var(--success);
+            border-style: solid;
+            background: var(--success-bg);
+        }
+
+        .file-drop input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-drop-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .file-drop-text .icon {
+            font-size: 1.25rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-drop-text .filename {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .file-drop-text .hint {
+            font-size: 0.75rem;
+            margin-top: 0.125rem;
+        }
+
+        .submit-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.875rem;
+            margin-top: 1.75rem;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .submit-btn.loading .spinner { display: block; }
+        .submit-btn.loading .btn-text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.83-3.23 9.36-7 10.58-3.77-1.22-7-5.75-7-10.58V6.3l7-3.12zM10 12l-2-2-1.41 1.41L10 14.83l6-6L14.59 7.41 10 12z"/></svg>
+            </div>
+            <h1>CISO Backup Generator</h1>
+            <p>Upload your files to generate a merged backup</p>
+        </div>
+
+        <div class="card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form id="uploadForm" action="/generate" method="POST" enctype="multipart/form-data">
+                <div class="upload-group">
+                    <label for="applied_controls">Applied Controls (.xlsx)</label>
+                    <div class="file-drop" id="drop-ac">
+                        <input type="file" name="applied_controls" id="applied_controls" accept=".xlsx" required>
+                        <div class="file-drop-text">
+                            <span class="icon">📄</span>
+                            <span class="label">Drop file here or click to browse</span>
+                            <div class="hint">.xlsx file</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-group">
+                    <label for="vulnerabilities">Vulnerabilities (.xlsx)</label>
+                    <div class="file-drop" id="drop-vuln">
+                        <input type="file" name="vulnerabilities" id="vulnerabilities" accept=".xlsx" required>
+                        <div class="file-drop-text">
+                            <span class="icon">🛡️</span>
+                            <span class="label">Drop file here or click to browse</span>
+                            <div class="hint">.xlsx file</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-group">
+                    <label for="source_backup">Source Backup (.bak)</label>
+                    <div class="file-drop" id="drop-bak">
+                        <input type="file" name="source_backup" id="source_backup" accept=".bak,.gz" required>
+                        <div class="file-drop-text">
+                            <span class="icon">💾</span>
+                            <span class="label">Drop file here or click to browse</span>
+                            <div class="hint">.bak or .gz file</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">Generate Backup</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+        </div>
+
+        <div class="footer">
+            CISO Assistant Backup Tool &middot; Files are processed locally
+        </div>
+    </div>
+
+    <script>
+        // File drop zone interactivity
+        document.querySelectorAll('.file-drop').forEach(zone => {
+            const input = zone.querySelector('input[type="file"]');
+            const textEl = zone.querySelector('.file-drop-text');
+
+            ['dragenter', 'dragover'].forEach(evt =>
+                zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add('dragover'); })
+            );
+            ['dragleave', 'drop'].forEach(evt =>
+                zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove('dragover'); })
+            );
+
+            zone.addEventListener('drop', e => {
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+
+            input.addEventListener('change', () => {
+                if (input.files.length) {
+                    zone.classList.add('has-file');
+                    textEl.innerHTML = `<span class="filename">✓ ${input.files[0].name}</span>`;
+                } else {
+                    zone.classList.remove('has-file');
+                }
+            });
+        });
+
+        // Loading state on submit
+        document.getElementById('uploadForm').addEventListener('submit', () => {
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Data files
+*.xlsx
+*.bak
+*.bak.tmp
+*.gz
+*.json
+
+# Backups
+backup-*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Env
+.env
+.envrc

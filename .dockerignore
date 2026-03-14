@@ -1,0 +1,10 @@
+*.xlsx
+*.bak
+*.bak.tmp
+*.gz
+*.json
+*.DS_Store
+__pycache__/
+*.pyc
+backup-*
+generate_applied_controls.py
