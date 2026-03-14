@@ -4,9 +4,11 @@ Accepts three file uploads and returns a merged downloadable .bak file.
 """
 
 import datetime
-import os
-from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 import io
+import os
+
+import openpyxl
+from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 
 from processor import process_backup
 
@@ -58,6 +60,35 @@ def generate():
     except Exception as e:
         flash(f'Unexpected error: {e}', 'error')
         return redirect(url_for('index'))
+
+
+@app.route('/template/applied-controls')
+def template_applied_controls():
+    wb = openpyxl.Workbook()
+    headers = ['Control ID', 'Requirement', 'Config Setting', 'Category',
+               'Priority', 'CSF Function', 'Effort', 'Impact']
+    for sheet_name in ('Level1', 'Level2'):
+        ws = wb.create_sheet(sheet_name)
+        ws.append(headers)
+    del wb['Sheet']  # remove default sheet
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return send_file(buf, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name='applied-controls-template.xlsx')
+
+
+@app.route('/template/vulnerabilities')
+def template_vulnerabilities():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Vulnerabilities'
+    ws.append(['Ref ID', 'Name', 'Description', 'Annotation'])
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return send_file(buf, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name='vulnerabilities-template.xlsx')
 
 
 if __name__ == '__main__':
