@@ -4,13 +4,14 @@ Accepts three file uploads and returns a merged downloadable .bak file.
 """
 
 import datetime
+import os
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 import io
 
 from processor import process_backup
 
 app = Flask(__name__)
-app.secret_key = 'ciso-backup-generator-secret-key'
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200 MB max upload
 
 

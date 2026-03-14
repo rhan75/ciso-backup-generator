@@ -14,7 +14,7 @@ import io
 
 
 # Constants
-TARGET_DATE = datetime.date(2026, 2, 7)
+TARGET_DATE = datetime.date.today()
 
 
 def parse_xlsx(file_bytes, sheet_path='xl/worksheets/sheet1.xml'):
